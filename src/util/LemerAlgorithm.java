@@ -1,84 +1,169 @@
 package util;
 
+import java.net.Inet4Address;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
 
 /**
  * Created by Aliaksei_Piskun1 on 16-Sep-16.
  */
 public class LemerAlgorithm {
-    public static ArrayList<Integer> computeSequence(Double a, Double r, Double m, Integer radix){
-        ArrayList<Integer> result = new ArrayList<>();
-        Double tempValue = r, tempParam = 0D;
+    private static ArrayList<Double> values = new ArrayList<>();
+    private static ArrayList<Double> valuesDivided = new ArrayList<>();
+    private static ArrayList<Integer> result = new ArrayList<>();
 
-        for(int i = 0; i < 20; i ++){
-            result.add(0);
-        }
+    private static Double mValue, dValue, sValue, piValue, knValue;
 
-        for(int i = 0; i < radix - 1; i ++){
-            tempValue = ((a * tempValue) % m);
-            tempParam = tempValue / m;
-            if((tempParam >= 0) && (tempParam < 0.05)){
-                result.set(0, result.get(0) + 1);
-            }
-            if((tempParam >= 0.05) && (tempParam < 0.1)){
-                result.set(1, result.get(1) + 1);
-            }
-            if((tempParam >= 0.1) && (tempParam < 0.15)){
-                result.set(2, result.get(2) + 1);
-            }
-            if((tempParam >= 0.15) && (tempParam < 0.2)){
-                result.set(3, result.get(3) + 1);
-            }
-            if((tempParam >= 0.2) && (tempParam < 0.25)){
-                result.set(4, result.get(4) + 1);
-            }
-            if((tempParam >= 0.25) && (tempParam < 0.3)){
-                result.set(5, result.get(5) + 1);
-            }
-            if((tempParam >= 0.3) && (tempParam < 0.35)){
-                result.set(6, result.get(6) + 1);
-            }
-            if((tempParam >= 0.35) && (tempParam < 0.4)){
-                result.set(7, result.get(7) + 1);
-            }
-            if((tempParam >= 0.4) && (tempParam < 0.45)){
-                result.set(8, result.get(8) + 1);
-            }
-            if((tempParam >= 0.45) && (tempParam < 0.5)){
-                result.set(9, result.get(9) + 1);
-            }
-            if((tempParam >= 0.5) && (tempParam < 0.55)){
-                result.set(10, result.get(10) + 1);
-            }
-            if((tempParam >= 0.55) && (tempParam < 0.6)){
-                result.set(11, result.get(11) + 1);
-            }
-            if((tempParam >= 0.6) && (tempParam < 0.65)){
-                result.set(12, result.get(12) + 1);
-            }
-            if((tempParam >= 0.65) && (tempParam < 0.7)){
-                result.set(13, result.get(13) + 1);
-            }
-            if((tempParam >= 0.7) && (tempParam < 0.75)){
-                result.set(14, result.get(14) + 1);
-            }
-            if((tempParam >= 0.75) && (tempParam < 0.8)){
-                result.set(15, result.get(15) + 1);
-            }
-            if((tempParam >= 0.8) && (tempParam < 0.85)){
-                result.set(16, result.get(16) + 1);
-            }
-            if((tempParam >= 0.85) && (tempParam < 0.9)){
-                result.set(17, result.get(17) + 1);
-            }
-            if((tempParam >= 0.9) && (tempParam < 0.95)){
-                result.set(18, result.get(18) + 1);
-            }
-            if((tempParam >= 0.95) && (tempParam <= 1)){
-                result.set(0, result.get(0) + 1);
-            }
-        }
+    private static Integer pValue, lValue;
+
+    public static ArrayList<Integer> computeSequence(Double a, Double r, Double m, Integer radix) {
+
+        clear();
+
+        initValues();
+
+        lemerAlgorithmCompute(a, r, m, radix);
+
+        mathDispSqrCompute();
+
+        periodCompute();
+
+        knCompute();
+
         return result;
     }
+
+    private static void initValues() {
+        mValue = 0D;
+        dValue = 0D;
+        sValue = 0D;
+        piValue = 0D;
+        knValue = 0D;
+        pValue = 0;
+        lValue = 0;
+
+        for (int i = 0; i < 20; i++) {
+            result.add(0);
+        }
+    }
+
+    private static void lemerAlgorithmCompute(Double a, Double r, Double m, Integer radix) {
+
+        Double tempValue = r, tempParam = 0D;
+
+        Double step = 0.05D;
+
+        for (int i = 0; i < radix - 1; i++) {
+            tempValue = ((a * tempValue) % m);
+            values.add(tempValue);
+            tempParam = tempValue / m;
+            valuesDivided.add(tempParam);
+
+            for (int j = 0; j < 20; j++) {
+                if (tempParam >= j * step && tempParam < (j + 1) * step) {
+                    result.set(j, (result.get(j) + 1));
+                }
+            }
+        }
+    }
+
+    private static void mathDispSqrCompute() {
+
+        for (int i = 0; i < values.size(); i++) {
+            mValue += values.get(i);
+        }
+
+        for (int i = 0; i < values.size(); i++) {
+            dValue += (values.get(i) - mValue) * (values.get(i) - mValue);
+        }
+
+        mValue /= (values.size() - 1);
+
+        dValue /= (values.size() - 1);
+
+        sValue = Math.sqrt(dValue);
+    }
+
+    private static void periodCompute() {
+        Integer firstEntry = 0, secondEntry = 0;
+
+        boolean flag = false;
+
+        for (int i = 1; i < valuesDivided.size(); i++) {
+            if (valuesDivided.get(i).equals(valuesDivided.get(0))) {
+                if (!flag) {
+                    flag = true;
+                    firstEntry = i;
+                    continue;
+
+                } else {
+                    secondEntry = i;
+                    break;
+                }
+            }
+        }
+
+        pValue = secondEntry - firstEntry;
+
+        lValue = pValue;
+    }
+
+    private static void knCompute() {
+
+        piValue = Math.PI / 4;
+
+        Double pairsCount = 0D;
+
+        for (int i = 0; i < (valuesDivided.size() / 2); i++) {
+            if ((Math.pow(valuesDivided.get(2 * i), 2) + Math.pow(valuesDivided.get(2 * i + 1), 2)) < 1) {
+                pairsCount++;
+
+            }
+        }
+
+        knValue = pairsCount / valuesDivided.size();
+
+    }
+
+    private static void clear() {
+        values.clear();
+        valuesDivided.clear();
+        result.clear();
+    }
+
+    public static ArrayList<Double> getValues() {
+        return values;
+    }
+
+
+    public static Double getmValue() {
+        return mValue;
+    }
+
+    public static Double getdValue() {
+        return dValue;
+    }
+
+    public static Double getsValue() {
+        return sValue;
+    }
+
+    public static Integer getpValue() {
+        return pValue;
+    }
+
+    public static Integer getlValue() {
+        return lValue;
+    }
+
+    public static Double getKnValue() {
+        return knValue;
+    }
+
+    public static Double getPiValue() {
+        return piValue;
+    }
+
+
 }
 
