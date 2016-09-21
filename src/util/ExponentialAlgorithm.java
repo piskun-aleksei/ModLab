@@ -40,7 +40,7 @@ public class ExponentialAlgorithm {
     private static void exponentialAlgorithmCompute(Double lambda, Integer radix) {
         Random random = new Random();
         for (int i = 0; i < radix; i++) {
-            values.add((-1) * (Math.log(random.nextDouble() / lambda)));
+            values.add((-1) * (Math.log(random.nextDouble()) / lambda));
             if (i == 0) {
                 max = values.get(0);
                 min = max;

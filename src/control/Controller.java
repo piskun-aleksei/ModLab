@@ -115,6 +115,10 @@ public class Controller implements Initializable {
                     mLabel.setText(ExponentialAlgorithm.getmValue().toString());
                     dLabel.setText(ExponentialAlgorithm.getdValue().toString());
                     sLabel.setText(ExponentialAlgorithm.getsValue().toString());
+                    pLabel.setText("Not availible");
+                    lLabel.setText("Not availible");
+                    piLabel.setText("Not availible");
+                    knLabel.setText("Not availible");
                 }
             }
         });
